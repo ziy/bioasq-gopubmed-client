@@ -9,6 +9,8 @@ Properties syntax
 -----------------
 **DEIIS students:** Please see the course project instruction to configure your _hwX-ID.properties_ file.
 
+**Others:**
+
 ```
 pubmed.search.service = PUBMED_SEARCH_SERVICE_URL
 linked.life.data.service = LINKED_LIFE_DATA_SERVICE_URL
@@ -19,8 +21,6 @@ mesh.service = MESH_SERVICE_URL
 uniprot.service = UNIPROT_SERVICE_URL
 require.session.url = true
 ```
-
-**Note**
 
 1. The values of the properties should be configured according to the instruction, e.g. http://gopubmed.org/web/gopubmedbeta/bioasq/pubmed.
 2. "require.session.url = true" is required for the official service, but for accessing proxy server, which may be set to _false_.
