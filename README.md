@@ -7,7 +7,7 @@ An example can be found [here](src/main/java/edu/cmu/lti/oaqa/bio/bioasq/service
 
 Properties syntax
 -----------------
-**DEIIS students:** Please see project instruction to configure your _hwX-ID.properties_ file.
+**DEIIS students:** Please see the course project instruction to configure your _hwX-ID.properties_ file.
 
 ```
 pubmed.search.service = PUBMED_SEARCH_SERVICE_URL
@@ -21,6 +21,7 @@ require.session.url = true
 ```
 
 **Note**
+
 1. The values of the properties should be configured according to the instruction, e.g. http://gopubmed.org/web/gopubmedbeta/bioasq/pubmed.
 2. "require.session.url = true" is required for the official service, but for accessing proxy server, which may be set to _false_.
 3. According to [Apache Commons Configuration](https://commons.apache.org/proper/commons-configuration/userguide/howto_properties.html#Using_PropertiesConfiguration), the configuration file should be placed in the current directory, in the user home directory, or in the classpath.
