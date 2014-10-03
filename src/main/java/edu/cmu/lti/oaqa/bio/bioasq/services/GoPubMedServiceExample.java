@@ -9,28 +9,49 @@ public class GoPubMedServiceExample {
 
   public static void main(String[] args) throws ClientProtocolException, IOException,
           ConfigurationException {
+    // String text = "Is Rheumatoid Arthritis more common in men or women?";
+    String text = "Are there any DNMT3 proteins present in plants?";
     GoPubMedService service = new GoPubMedService(args[0]);
     OntologyServiceResponse.Result diseaseOntologyResult = service
-            .findDiseaseOntologyEntitiesPaged("nitric oxide", 0, 10);
+            .findDiseaseOntologyEntitiesPaged(text, 0, 10);
     System.out.println(diseaseOntologyResult.getFindings().size());
-    OntologyServiceResponse.Result geneOntologyResult = service.findGeneOntologyEntitiesPaged(
-            "nitric oxide synthase", 0, 10);
-    System.out.println(geneOntologyResult.getFindings().size());
-    OntologyServiceResponse.Result jochemResult = service.findJochemEntitiesPaged(
-            "nitric oxide synthase", 0, 10);
-    System.out.println(jochemResult.getFindings().size());
-    OntologyServiceResponse.Result meshResult = service.findMeshEntitiesPaged(
-            "nitric oxide synthase", 0, 10);
-    System.out.println(meshResult.getFindings().size());
-    OntologyServiceResponse.Result uniprotResult = service.findUniprotEntitiesPaged(
-            "nitric oxide synthase", 0, 10);
-    System.out.println(uniprotResult.getFindings().size());
-    PubMedSearchServiceResponse.Result pubmedResult = service.findPubMedCitations(
-            "nitric oxide synthase", 0, 10);
-    System.out.println(pubmedResult.getDocuments().size());
+    OntologyServiceResponse.Result geneOntologyResult = service.findGeneOntologyEntitiesPaged(text,
+            0, 10);
+    System.out.println("Gene ontology: " + geneOntologyResult.getFindings().size());
+    for (OntologyServiceResponse.Finding finding : geneOntologyResult.getFindings()) {
+      System.out.println(" > " + finding.getConcept().getLabel() + " "
+              + finding.getConcept().getUri());
+    }
+    OntologyServiceResponse.Result jochemResult = service.findJochemEntitiesPaged(text, 0, 10);
+    System.out.println("Jochem: " + jochemResult.getFindings().size());
+    for (OntologyServiceResponse.Finding finding : jochemResult.getFindings()) {
+      System.out.println(" > " + finding.getConcept().getLabel() + " "
+              + finding.getConcept().getUri());
+    }
+    OntologyServiceResponse.Result meshResult = service.findMeshEntitiesPaged(text, 0, 10);
+    System.out.println("MeSH: " + meshResult.getFindings().size());
+    for (OntologyServiceResponse.Finding finding : meshResult.getFindings()) {
+      System.out.println(" > " + finding.getConcept().getLabel() + " "
+              + finding.getConcept().getUri());
+    }
+    OntologyServiceResponse.Result uniprotResult = service.findUniprotEntitiesPaged(text, 0, 10);
+    System.out.println("UniProt: " + uniprotResult.getFindings().size());
+    for (OntologyServiceResponse.Finding finding : uniprotResult.getFindings()) {
+      System.out.println(" > " + finding.getConcept().getLabel() + " "
+              + finding.getConcept().getUri());
+    }
     LinkedLifeDataServiceResponse.Result linkedLifeDataResult = service
-            .findLinkedLifeDataEntitiesPaged("nitric oxide synthase", 0, 10);
-    System.out.println(linkedLifeDataResult.getEntities().size());
+            .findLinkedLifeDataEntitiesPaged(text, 0, 10);
+    System.out.println("LinkedLifeData: " + linkedLifeDataResult.getEntities().size());
+    for (LinkedLifeDataServiceResponse.Entity entity : linkedLifeDataResult.getEntities()) {
+      System.out.println(" > " + entity.getEntity());
+      for (LinkedLifeDataServiceResponse.Relation relation : entity.getRelations()) {
+        System.out.println("   - pred: " + relation.getPred());
+        System.out.println("   - sub: " + relation.getSubj());
+        System.out.println("   - obj: " + relation.getObj());
+      }
+    }
+    PubMedSearchServiceResponse.Result pubmedResult = service.findPubMedCitations(text, 0, 10);
+    System.out.println(pubmedResult.getSize());
   }
-
 }

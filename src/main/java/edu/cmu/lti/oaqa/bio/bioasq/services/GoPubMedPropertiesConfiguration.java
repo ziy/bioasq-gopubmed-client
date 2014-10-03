@@ -5,6 +5,7 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 
@@ -12,13 +13,17 @@ import com.google.common.io.CharStreams;
 
 public class GoPubMedPropertiesConfiguration {
 
-  private PropertiesConfiguration config;
+  private Configuration config;
 
   public static final String REQUIRE_SESSION_URL = "require.session.url";
 
   public GoPubMedPropertiesConfiguration(String gopubmedPropertiesFilepath)
           throws ConfigurationException {
-    config = new PropertiesConfiguration(gopubmedPropertiesFilepath);
+    this.config = new PropertiesConfiguration(gopubmedPropertiesFilepath);
+  }
+
+  public GoPubMedPropertiesConfiguration(Configuration config) {
+    this.config = config;
   }
 
   public String getUrl(GoPubMedServiceKey service) throws MalformedURLException, IOException {

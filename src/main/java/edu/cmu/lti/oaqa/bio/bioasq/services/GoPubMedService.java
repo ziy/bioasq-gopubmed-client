@@ -3,6 +3,7 @@ package edu.cmu.lti.oaqa.bio.bioasq.services;
 import java.io.IOException;
 import java.util.Map;
 
+import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.ClientProtocolException;
@@ -26,11 +27,16 @@ public final class GoPubMedService {
 
   private GoPubMedPropertiesConfiguration config;
 
-  public GoPubMedService(String gopubmedPropertiesFilepath) throws IOException,
-          ConfigurationException {
+  public GoPubMedService(String gopubmedPropertiesFilepath) throws ConfigurationException {
     httpClient = HttpClients.createSystem();
     gson = new Gson();
     config = new GoPubMedPropertiesConfiguration(gopubmedPropertiesFilepath);
+  }
+
+  public GoPubMedService(Configuration gopubmedConfiguration) {
+    httpClient = HttpClients.createSystem();
+    gson = new Gson();
+    config = new GoPubMedPropertiesConfiguration(gopubmedConfiguration);
   }
 
   public LinkedLifeDataServiceResponse.Result findLinkedLifeDataEntitiesPaged(String keywords,
@@ -97,11 +103,28 @@ public final class GoPubMedService {
             .build();
     HttpPost post = new HttpPost(serviceSessionUrl);
     post.setEntity(entity);
-    CloseableHttpResponse response = httpClient.execute(post);
-    try {
-      return EntityUtils.toString(response.getEntity());
-    } finally {
-      response.close();
+    String result;
+    try (CloseableHttpResponse response = httpClient.execute(post)) {
+      result = EntityUtils.toString(response.getEntity());
+    }
+    throwServerSideException(result);
+    return result;
+  }
+
+  private void throwServerSideException(String result) throws IOException {
+    @SuppressWarnings("unchecked")
+    Map<String, String> resultMap = gson.fromJson(result, Map.class);
+    String exceptionString = resultMap.get("exception");
+    if (exceptionString != null) {
+      String[] segs = exceptionString.split(":", 2);
+      Exception exception;
+      try {
+        exception = Class.forName(segs[0]).asSubclass(Exception.class).getConstructor(String.class)
+                .newInstance(segs[1]);
+      } catch (Exception e) {
+        exception = new Exception(exceptionString);
+      }
+      throw new IOException(exception);
     }
   }
 
