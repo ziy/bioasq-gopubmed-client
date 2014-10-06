@@ -21,6 +21,12 @@ import com.google.gson.Gson;
 
 public final class GoPubMedService {
 
+  private static final int DEFAULT_ENTITIES_PER_PAGE = 100;
+
+  private static final int DEFAULT_ARTICLES_PER_PAGE = 100;
+
+  private static final int DEFAULT_CONCEPTS_PER_PAGE = 100;
+
   private CloseableHttpClient httpClient;
 
   private Gson gson;
@@ -48,6 +54,11 @@ public final class GoPubMedService {
     return gson.fromJson(response, LinkedLifeDataServiceResponse.class).getResult();
   }
 
+  public LinkedLifeDataServiceResponse.Result findLinkedLifeDataEntitiesPaged(String keywords,
+          int page) throws ClientProtocolException, IOException {
+    return findLinkedLifeDataEntitiesPaged(keywords, page, DEFAULT_ENTITIES_PER_PAGE);
+  }
+
   public PubMedSearchServiceResponse.Result findPubMedCitations(String keywords, int page,
           int articlesPerPage) throws ClientProtocolException, IOException {
     Map<String, Object[]> request = ImmutableMap.<String, Object[]> builder()
@@ -57,10 +68,20 @@ public final class GoPubMedService {
     return gson.fromJson(response, PubMedSearchServiceResponse.class).getResult();
   }
 
+  public PubMedSearchServiceResponse.Result findPubMedCitations(String keywords, int page)
+          throws ClientProtocolException, IOException {
+    return findPubMedCitations(keywords, page, DEFAULT_ARTICLES_PER_PAGE);
+  }
+
   public OntologyServiceResponse.Result findUniprotEntitiesPaged(String keywords, int page,
           int conceptsPerPage) throws ClientProtocolException, IOException {
     return findOntologyEntitiesPaged(config.getUrl(GoPubMedServiceKey.UNIPROT_SERVICE), keywords,
             page, conceptsPerPage);
+  }
+
+  public OntologyServiceResponse.Result findUniprotEntitiesPaged(String keywords, int page)
+          throws ClientProtocolException, IOException {
+    return findUniprotEntitiesPaged(keywords, page, DEFAULT_CONCEPTS_PER_PAGE);
   }
 
   public OntologyServiceResponse.Result findMeshEntitiesPaged(String keywords, int page,
@@ -69,10 +90,20 @@ public final class GoPubMedService {
             page, conceptsPerPage);
   }
 
+  public OntologyServiceResponse.Result findMeshEntitiesPaged(String keywords, int page)
+          throws ClientProtocolException, IOException {
+    return findMeshEntitiesPaged(keywords, page, DEFAULT_CONCEPTS_PER_PAGE);
+  }
+
   public OntologyServiceResponse.Result findJochemEntitiesPaged(String keywords, int page,
           int conceptsPerPage) throws ClientProtocolException, IOException {
     return findOntologyEntitiesPaged(config.getUrl(GoPubMedServiceKey.JOCHEM_SERVICE), keywords,
             page, conceptsPerPage);
+  }
+
+  public OntologyServiceResponse.Result findJochemEntitiesPaged(String keywords, int page)
+          throws ClientProtocolException, IOException {
+    return findJochemEntitiesPaged(keywords, page, DEFAULT_CONCEPTS_PER_PAGE);
   }
 
   public OntologyServiceResponse.Result findGeneOntologyEntitiesPaged(String keywords, int page,
@@ -81,10 +112,20 @@ public final class GoPubMedService {
             keywords, page, conceptsPerPage);
   }
 
+  public OntologyServiceResponse.Result findGeneOntologyEntitiesPaged(String keywords, int page)
+          throws ClientProtocolException, IOException {
+    return findGeneOntologyEntitiesPaged(keywords, page, DEFAULT_CONCEPTS_PER_PAGE);
+  }
+
   public OntologyServiceResponse.Result findDiseaseOntologyEntitiesPaged(String keywords, int page,
           int conceptsPerPage) throws ClientProtocolException, IOException {
     return findOntologyEntitiesPaged(config.getUrl(GoPubMedServiceKey.DISEASE_ONTOLOGY_SERVICE),
             keywords, page, conceptsPerPage);
+  }
+
+  public OntologyServiceResponse.Result findDiseaseOntologyEntitiesPaged(String keywords, int page)
+          throws ClientProtocolException, IOException {
+    return findDiseaseOntologyEntitiesPaged(keywords, page, DEFAULT_CONCEPTS_PER_PAGE);
   }
 
   private OntologyServiceResponse.Result findOntologyEntitiesPaged(String serviceSessionUrl,

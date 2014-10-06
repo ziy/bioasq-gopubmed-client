@@ -46,6 +46,7 @@ public class GoPubMedServiceExample {
     for (LinkedLifeDataServiceResponse.Entity entity : linkedLifeDataResult.getEntities()) {
       System.out.println(" > " + entity.getEntity());
       for (LinkedLifeDataServiceResponse.Relation relation : entity.getRelations()) {
+        System.out.println("   - labels: " + relation.getLabels());
         System.out.println("   - pred: " + relation.getPred());
         System.out.println("   - sub: " + relation.getSubj());
         System.out.println("   - obj: " + relation.getObj());
