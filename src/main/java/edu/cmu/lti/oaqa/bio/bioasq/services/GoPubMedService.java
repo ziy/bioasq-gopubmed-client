@@ -12,7 +12,8 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 
 import com.google.common.base.Charsets;
@@ -33,16 +34,22 @@ public final class GoPubMedService {
 
   private GoPubMedPropertiesConfiguration config;
 
+  private DefaultHttpRequestRetryHandler retryHandler;
+
   public GoPubMedService(String gopubmedPropertiesFilepath) throws ConfigurationException {
-    httpClient = HttpClients.createSystem();
-    gson = new Gson();
-    config = new GoPubMedPropertiesConfiguration(gopubmedPropertiesFilepath);
+    this(new GoPubMedPropertiesConfiguration(gopubmedPropertiesFilepath));
   }
 
   public GoPubMedService(Configuration gopubmedConfiguration) {
-    httpClient = HttpClients.createSystem();
+    this(new GoPubMedPropertiesConfiguration(gopubmedConfiguration));
+  }
+
+  private GoPubMedService(GoPubMedPropertiesConfiguration config) {
+    retryHandler = new DefaultHttpRequestRetryHandler(10, true);
+    httpClient = HttpClientBuilder.create().useSystemProperties().setRetryHandler(retryHandler)
+            .build();
     gson = new Gson();
-    config = new GoPubMedPropertiesConfiguration(gopubmedConfiguration);
+    this.config = config;
   }
 
   public LinkedLifeDataServiceResponse.Result findLinkedLifeDataEntitiesPaged(String keywords,
@@ -86,8 +93,8 @@ public final class GoPubMedService {
 
   public OntologyServiceResponse.Result findMeshEntitiesPaged(String keywords, int page,
           int conceptsPerPage) throws ClientProtocolException, IOException {
-    return findOntologyEntitiesPaged(config.getUrl(GoPubMedServiceKey.MESH_SERVICE), keywords,
-            page, conceptsPerPage);
+    return findOntologyEntitiesPaged(config.getUrl(GoPubMedServiceKey.MESH_SERVICE), keywords, page,
+            conceptsPerPage);
   }
 
   public OntologyServiceResponse.Result findMeshEntitiesPaged(String keywords, int page)
@@ -129,8 +136,8 @@ public final class GoPubMedService {
   }
 
   private OntologyServiceResponse.Result findOntologyEntitiesPaged(String serviceSessionUrl,
-          String keywords, int page, int conceptsPerPage) throws ClientProtocolException,
-          IOException {
+          String keywords, int page, int conceptsPerPage)
+                  throws ClientProtocolException, IOException {
     Map<String, Object[]> request = ImmutableMap.<String, Object[]> builder()
             .put("findEntitiesPaged", new Object[] { keywords, page, conceptsPerPage }).build();
     String response = postRequest(serviceSessionUrl, gson.toJson(request));
@@ -138,21 +145,32 @@ public final class GoPubMedService {
   }
 
   private String postRequest(String serviceSessionUrl, String jsonString) throws IOException {
-    HttpEntity entity = MultipartEntityBuilder
-            .create()
+    HttpEntity entity = MultipartEntityBuilder.create()
             .addTextBody("json", jsonString, ContentType.create("application/json", Charsets.UTF_8))
             .build();
     HttpPost post = new HttpPost(serviceSessionUrl);
     post.setEntity(entity);
-    String result;
+    String result = null;
     try (CloseableHttpResponse response = httpClient.execute(post)) {
       result = EntityUtils.toString(response.getEntity());
+    } catch (IOException e) {
+      throwClientSideException(jsonString, serviceSessionUrl, e);
     }
-    throwServerSideException(result);
+    throwServerSideException(result, jsonString, serviceSessionUrl);
     return result;
   }
 
-  private void throwServerSideException(String result) throws IOException {
+  private void throwClientSideException(String request, String url, IOException e)
+          throws IOException {
+    System.out.println("[ERROR] Client side error");
+    System.out.println("  Request: " + request);
+    System.out.println("  Server URL: " + url);
+    System.out.println("  Retry count: " + retryHandler.getRetryCount());
+    throw e;
+  }
+
+  private void throwServerSideException(String result, String request, String url)
+          throws IOException {
     @SuppressWarnings("unchecked")
     Map<String, String> resultMap = gson.fromJson(result, Map.class);
     String exceptionString = resultMap.get("exception");
@@ -165,6 +183,10 @@ public final class GoPubMedService {
       } catch (Exception e) {
         exception = new Exception(exceptionString);
       }
+      System.out.println("[ERROR] Server side error");
+      System.out.println("  Request: " + request);
+      System.out.println("  Server URL: " + url);
+      System.out.println("  Retry count: " + retryHandler.getRetryCount());
       throw new IOException(exception);
     }
   }
