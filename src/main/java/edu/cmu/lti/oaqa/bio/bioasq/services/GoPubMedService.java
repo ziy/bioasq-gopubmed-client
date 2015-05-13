@@ -169,10 +169,15 @@ public final class GoPubMedService {
     throw e;
   }
 
+  @SuppressWarnings("unchecked")
   private void throwServerSideException(String result, String request, String url)
           throws IOException {
-    @SuppressWarnings("unchecked")
-    Map<String, String> resultMap = gson.fromJson(result, Map.class);
+    Map<String, String> resultMap = null;
+    try {
+      resultMap = gson.fromJson(result, Map.class);
+    } catch (Exception e) {
+      System.out.println("result string: " + result);
+    }
     String exceptionString = resultMap.get("exception");
     if (exceptionString != null) {
       String[] segs = exceptionString.split(":", 2);
