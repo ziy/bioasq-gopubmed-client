@@ -14,24 +14,24 @@ import org.apache.commons.configuration.PropertiesConfiguration;
 
 import com.google.common.io.CharStreams;
 
-public class GoPubMedPropertiesConfiguration {
+class GoPubMedPropertiesConfiguration {
 
   private Configuration config;
 
-  public static final String REQUIRE_SESSION_URL = "require.session.url";
+  private static final String REQUIRE_SESSION_URL = "require.session.url";
 
-  public static final String SESSION_REFRESH_INTERVAL = "session.refresh.interval";
+  private static final String SESSION_REFRESH_INTERVAL = "session.refresh.interval";
 
-  public GoPubMedPropertiesConfiguration(String gopubmedPropertiesFilepath)
+  GoPubMedPropertiesConfiguration(String gopubmedPropertiesFilepath)
           throws ConfigurationException {
     this.config = new PropertiesConfiguration(gopubmedPropertiesFilepath);
   }
 
-  public GoPubMedPropertiesConfiguration(Configuration config) {
+  GoPubMedPropertiesConfiguration(Configuration config) {
     this.config = config;
   }
 
-  public String getUrl(GoPubMedServiceKey service) throws MalformedURLException, IOException {
+  String getUrl(GoPubMedServiceKey service) throws IOException {
     String serviceUrl = config.getString(service.getKey());
     if (config.getBoolean(REQUIRE_SESSION_URL)) {
       return timeout(serviceUrl) ? updateSessionUrl(serviceUrl) : getSessionUrl(serviceUrl);
@@ -49,7 +49,7 @@ public class GoPubMedPropertiesConfiguration {
             || Calendar.getInstance().after(service2timeout.get(serviceUrl));
   }
 
-  private String updateSessionUrl(String serviceUrl) throws MalformedURLException, IOException {
+  private String updateSessionUrl(String serviceUrl) throws IOException {
     String sessionUrl = CharStreams
             .toString(new InputStreamReader(new URL(serviceUrl).openStream()));
     service2session.put(serviceUrl, sessionUrl);

@@ -6,7 +6,6 @@ import java.util.Map;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.http.HttpEntity;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
@@ -53,93 +52,92 @@ public final class GoPubMedService {
   }
 
   public LinkedLifeDataServiceResponse.Result findLinkedLifeDataEntitiesPaged(String keywords,
-          int page, int entitiesPerPage) throws ClientProtocolException, IOException {
-    Map<String, Object[]> request = ImmutableMap.<String, Object[]> builder()
-            .put("findEntitiesPaged", new Object[] { keywords, page, entitiesPerPage }).build();
+          int page, int entitiesPerPage) throws IOException {
+    Map<String, ?> request = ImmutableMap
+            .of("findEntitiesPaged", new Object[] { keywords, page, entitiesPerPage });
     String response = postRequest(config.getUrl(GoPubMedServiceKey.LINKED_LIFE_DATA_SERVICE),
             gson.toJson(request));
     return gson.fromJson(response, LinkedLifeDataServiceResponse.class).getResult();
   }
 
   public LinkedLifeDataServiceResponse.Result findLinkedLifeDataEntitiesPaged(String keywords,
-          int page) throws ClientProtocolException, IOException {
+          int page) throws IOException {
     return findLinkedLifeDataEntitiesPaged(keywords, page, DEFAULT_ENTITIES_PER_PAGE);
   }
 
   public PubMedSearchServiceResponse.Result findPubMedCitations(String keywords, int page,
-          int articlesPerPage) throws ClientProtocolException, IOException {
-    Map<String, Object[]> request = ImmutableMap.<String, Object[]> builder()
-            .put("findPubMedCitations", new Object[] { keywords, page, articlesPerPage }).build();
+          int articlesPerPage) throws IOException {
+    Map<String, ?> request = ImmutableMap
+            .of("findPubMedCitations", new Object[] { keywords, page, articlesPerPage });
     String response = postRequest(config.getUrl(GoPubMedServiceKey.PUBMED_SEARCH_SERVICE),
             gson.toJson(request));
     return gson.fromJson(response, PubMedSearchServiceResponse.class).getResult();
   }
 
   public PubMedSearchServiceResponse.Result findPubMedCitations(String keywords, int page)
-          throws ClientProtocolException, IOException {
+          throws IOException {
     return findPubMedCitations(keywords, page, DEFAULT_ARTICLES_PER_PAGE);
   }
 
   public OntologyServiceResponse.Result findUniprotEntitiesPaged(String keywords, int page,
-          int conceptsPerPage) throws ClientProtocolException, IOException {
+          int conceptsPerPage) throws IOException {
     return findOntologyEntitiesPaged(config.getUrl(GoPubMedServiceKey.UNIPROT_SERVICE), keywords,
             page, conceptsPerPage);
   }
 
   public OntologyServiceResponse.Result findUniprotEntitiesPaged(String keywords, int page)
-          throws ClientProtocolException, IOException {
+          throws IOException {
     return findUniprotEntitiesPaged(keywords, page, DEFAULT_CONCEPTS_PER_PAGE);
   }
 
   public OntologyServiceResponse.Result findMeshEntitiesPaged(String keywords, int page,
-          int conceptsPerPage) throws ClientProtocolException, IOException {
+          int conceptsPerPage) throws IOException {
     return findOntologyEntitiesPaged(config.getUrl(GoPubMedServiceKey.MESH_SERVICE), keywords, page,
             conceptsPerPage);
   }
 
   public OntologyServiceResponse.Result findMeshEntitiesPaged(String keywords, int page)
-          throws ClientProtocolException, IOException {
+          throws IOException {
     return findMeshEntitiesPaged(keywords, page, DEFAULT_CONCEPTS_PER_PAGE);
   }
 
   public OntologyServiceResponse.Result findJochemEntitiesPaged(String keywords, int page,
-          int conceptsPerPage) throws ClientProtocolException, IOException {
+          int conceptsPerPage) throws IOException {
     return findOntologyEntitiesPaged(config.getUrl(GoPubMedServiceKey.JOCHEM_SERVICE), keywords,
             page, conceptsPerPage);
   }
 
   public OntologyServiceResponse.Result findJochemEntitiesPaged(String keywords, int page)
-          throws ClientProtocolException, IOException {
+          throws IOException {
     return findJochemEntitiesPaged(keywords, page, DEFAULT_CONCEPTS_PER_PAGE);
   }
 
   public OntologyServiceResponse.Result findGeneOntologyEntitiesPaged(String keywords, int page,
-          int conceptsPerPage) throws ClientProtocolException, IOException {
+          int conceptsPerPage) throws IOException {
     return findOntologyEntitiesPaged(config.getUrl(GoPubMedServiceKey.GENE_ONTOLOGY_SERVICE),
             keywords, page, conceptsPerPage);
   }
 
   public OntologyServiceResponse.Result findGeneOntologyEntitiesPaged(String keywords, int page)
-          throws ClientProtocolException, IOException {
+          throws IOException {
     return findGeneOntologyEntitiesPaged(keywords, page, DEFAULT_CONCEPTS_PER_PAGE);
   }
 
   public OntologyServiceResponse.Result findDiseaseOntologyEntitiesPaged(String keywords, int page,
-          int conceptsPerPage) throws ClientProtocolException, IOException {
+          int conceptsPerPage) throws IOException {
     return findOntologyEntitiesPaged(config.getUrl(GoPubMedServiceKey.DISEASE_ONTOLOGY_SERVICE),
             keywords, page, conceptsPerPage);
   }
 
   public OntologyServiceResponse.Result findDiseaseOntologyEntitiesPaged(String keywords, int page)
-          throws ClientProtocolException, IOException {
+          throws IOException {
     return findDiseaseOntologyEntitiesPaged(keywords, page, DEFAULT_CONCEPTS_PER_PAGE);
   }
 
   private OntologyServiceResponse.Result findOntologyEntitiesPaged(String serviceSessionUrl,
-          String keywords, int page, int conceptsPerPage)
-                  throws ClientProtocolException, IOException {
-    Map<String, Object[]> request = ImmutableMap.<String, Object[]> builder()
-            .put("findEntitiesPaged", new Object[] { keywords, page, conceptsPerPage }).build();
+          String keywords, int page, int conceptsPerPage) throws IOException {
+    Map<String, ?> request = ImmutableMap
+            .of("findEntitiesPaged", new Object[] { keywords, page, conceptsPerPage });
     String response = postRequest(serviceSessionUrl, gson.toJson(request));
     return gson.fromJson(response, OntologyServiceResponse.class).getResult();
   }

@@ -3,14 +3,11 @@ package edu.cmu.lti.oaqa.bio.bioasq.services;
 import java.io.IOException;
 
 import org.apache.commons.configuration.ConfigurationException;
-import org.apache.http.client.ClientProtocolException;
 
 public class GoPubMedServiceExample {
 
-  public static void main(String[] args) throws ClientProtocolException, IOException,
-          ConfigurationException {
-    // String text = "Is Rheumatoid Arthritis more common in men or women?";
-    String text = "Are there any DNMT3 proteins present in plants?";
+  public static void main(String[] args) throws IOException, ConfigurationException {
+    String text = "DNMT3 protein plant";
     GoPubMedService service = new GoPubMedService(args[0]);
     OntologyServiceResponse.Result diseaseOntologyResult = service
             .findDiseaseOntologyEntitiesPaged(text, 0);
