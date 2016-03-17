@@ -174,7 +174,11 @@ public final class GoPubMedService {
     try {
       resultMap = gson.fromJson(result, Map.class);
     } catch (Exception e) {
-      System.out.println("result string: " + result);
+      System.out.println("[ERROR] Server side error");
+      System.out.println("  Request: " + request);
+      System.out.println("  Server URL: " + url);
+      System.out.println("  Retry count: " + retryHandler.getRetryCount());
+      throw new IOException(new Exception(result));
     }
     String exceptionString = resultMap.get("exception");
     if (exceptionString != null) {
