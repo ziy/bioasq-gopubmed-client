@@ -5,6 +5,29 @@ Java client and [Gson](https://code.google.com/p/google-gson/) objects for [GoPu
 
 An example can be found [here](src/main/java/edu/cmu/lti/oaqa/bio/bioasq/services/GoPubMedServiceExample.java).
 
+Use in a Maven project
+-------------------------
+
+Configure your pom.xml by adding this repository
+
+```xml
+<repository>
+  <id>ziy-mvnrepo-releases</id>
+  <name>ziy GitHub Personal Repo</name>
+  <url>https://raw.github.com/ziy/mvn-releases/master/</url>
+</repository>
+```
+
+and adding this dependency
+
+```xml
+<dependency>
+  <groupId>edu.cmu.lti.oaqa.bio</groupId>
+  <artifactId>bioasq-gopubmed-client</artifactId>
+  <version>0.0.6</version>
+</dependency>
+```
+
 Properties syntax
 -----------------
 **DEIIS students:** Please see the course project instruction to configure your _hwX-ID.properties_ file.
